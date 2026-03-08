@@ -1,0 +1,22 @@
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: focustella-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: focustella
+      POSTGRES_USER: focustella
+      POSTGRES_PASSWORD: focustella
+      TZ: Asia/Seoul
+    ports:
+      - "5434:5432"
+    volumes:
+      - focustella-postgres-data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U focustella -d focustella"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  focustella-postgres-data:
