@@ -1,4 +1,4 @@
-package com.example.focustellaapi;
+package com.example.focustella;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
