@@ -47,6 +47,7 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/auth/**",
+                                "/api/v1/session/**", // 🔥 이 줄을 추가하여 세션 관련 API를 모두 허용합니다.
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated())
