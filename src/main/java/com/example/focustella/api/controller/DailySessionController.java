@@ -4,6 +4,7 @@ import com.example.focustella.api.dto.request.DailySessionSaveRequest;
 import com.example.focustella.api.dto.response.DailySessionResponse;
 import com.example.focustella.application.port.in.GetDailySessionUseCase;
 import com.example.focustella.application.port.in.SaveDailySessionUseCase;
+import com.example.focustella.common.api.ApiResponse;
 import com.example.focustella.domain.model.ChecklistItem;
 import jakarta.validation.Valid;
 import java.util.List;
@@ -31,7 +32,7 @@ public class DailySessionController {
     }
 
     @PostMapping("/daily")
-    public ResponseEntity<Void> saveDailySession(
+    public ResponseEntity<ApiResponse<Void>> saveDailySession(
             Authentication authentication,
             @Valid @RequestBody DailySessionSaveRequest request
     ) {
@@ -41,16 +42,16 @@ public class DailySessionController {
                         .toList();
 
         saveDailySessionUseCase.save(request.timestamp(), items, authentication.getName());
-        return ResponseEntity.ok().build();
+        return ResponseEntity.ok(ApiResponse.emptySuccess());
     }
 
     @GetMapping("/daily")
-    public ResponseEntity<List<DailySessionResponse>> getDailySessions(Authentication authentication) {
+    public ResponseEntity<ApiResponse<List<DailySessionResponse>>> getDailySessions(Authentication authentication) {
         List<DailySessionResponse> responses = getDailySessionUseCase.getSessionsByUserId(authentication.getName())
                 .stream()
                 .map(DailySessionResponse::from)
                 .toList();
 
-        return ResponseEntity.ok(responses);
+        return ResponseEntity.ok(ApiResponse.success(responses));
     }
 }
