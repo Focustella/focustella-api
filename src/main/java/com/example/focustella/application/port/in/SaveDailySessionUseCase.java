@@ -5,5 +5,5 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 public interface SaveDailySessionUseCase {
-    void save(LocalDateTime timestamp, List<ChecklistItem> checklists);
+    void save(LocalDateTime timestamp, List<ChecklistItem> checklists, String authenticatedUserId);
 }
