@@ -3,7 +3,10 @@ package com.example.focustella.application.service;
 import com.example.focustella.application.port.in.GetDailySessionUseCase;
 import com.example.focustella.application.port.in.SaveDailySessionUseCase;
 import com.example.focustella.application.port.out.LoadDailySessionPort;
+import com.example.focustella.application.port.out.LoadUserPort;
 import com.example.focustella.application.port.out.SaveDailySessionPort;
+import com.example.focustella.common.exception.BusinessException;
+import com.example.focustella.common.exception.code.CommonErrorCode;
 import com.example.focustella.domain.model.ChecklistItem;
 import com.example.focustella.domain.model.DailySession;
 import org.springframework.stereotype.Service;
@@ -18,22 +21,29 @@ public class DailySessionService implements SaveDailySessionUseCase, GetDailySes
 
     private final SaveDailySessionPort saveDailySessionPort;
     private final LoadDailySessionPort loadDailySessionPort;
+    private final LoadUserPort loadUserPort;
 
-    public DailySessionService(SaveDailySessionPort saveDailySessionPort, LoadDailySessionPort loadDailySessionPort) {
+    public DailySessionService(
+            SaveDailySessionPort saveDailySessionPort,
+            LoadDailySessionPort loadDailySessionPort,
+            LoadUserPort loadUserPort
+    ) {
         this.saveDailySessionPort = saveDailySessionPort;
         this.loadDailySessionPort = loadDailySessionPort;
+        this.loadUserPort = loadUserPort;
     }
 
     @Override
     @Transactional
-    public void save(LocalDateTime timestamp, List<ChecklistItem> checklists) {
-        // 요구사항: UUID류는 더미 데이터로 처리
+    public void save(LocalDateTime timestamp, List<ChecklistItem> checklists, String authenticatedUserId) {
+        loadUserPort.loadById(authenticatedUserId)
+                .orElseThrow(() -> new BusinessException(CommonErrorCode.RESOURCE_NOT_FOUND, "사용자를 찾을 수 없습니다."));
+
         String dummySessionUuid = UUID.randomUUID().toString();
-        String dummyUserUuid = "dummy-user-uuid-1234";
 
         DailySession session = new DailySession(
                 dummySessionUuid,
-                dummyUserUuid,
+                authenticatedUserId,
                 timestamp,
                 checklists
         );

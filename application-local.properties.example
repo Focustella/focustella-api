@@ -1,4 +1,6 @@
-    # Copy this file to `application-local.properties` and set your local values.
+# Copy this file to `application-local.properties` and set your local values.
 DB_URL=jdbc:postgresql://localhost:5434/focustella
 DB_USERNAME=focustella
 DB_PASSWORD=focustella
+JWT_SECRET=change-this-secret-key-for-local-development-please-1234567890
+JWT_ACCESS_TOKEN_EXPIRATION_SECONDS=2592000
