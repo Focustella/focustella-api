@@ -22,6 +22,7 @@ import jakarta.validation.Valid;
 import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -123,7 +124,7 @@ public class SessionController implements SessionControllerDocs {
         ));
     }
 
-    @PostMapping("/focus/tag/delete")
+    @DeleteMapping("/focus/tag/delete")
     public ResponseEntity<ApiResponse<UserTagResponse>> deleteFocusTag(
             Authentication authentication,
             @Valid @RequestBody FocusTagRequest request
