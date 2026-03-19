@@ -1,7 +1,7 @@
 package com.example.focustella.infrastructure.config;
 
 import com.example.focustella.common.api.ApiResponse;
-import com.example.focustella.common.exception.code.AuthErrorCode;
+import com.example.focustella.common.exception.code.CommonErrorCode;
 import com.example.focustella.common.exception.code.ErrorCodeSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
@@ -54,9 +54,8 @@ public class SecurityConfig {
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/api/v1/auth/**",
-                                "/api/v1/users/**",
                                 "/api/v1/sky/*",
-                                "/api/v1/constellations/**",
+                                "/api/v1/constellation/**",
                                 "/error"
                         ).permitAll()
                         .anyRequest().authenticated())
@@ -65,13 +64,13 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 writeErrorResponse(
                                         response,
-                                        AuthErrorCode.UNAUTHORIZED,
+                                        CommonErrorCode.UNAUTHORIZED,
                                         request.getRequestURI()
                                 ))
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 writeErrorResponse(
                                         response,
-                                        AuthErrorCode.FORBIDDEN,
+                                        CommonErrorCode.FORBIDDEN,
                                         request.getRequestURI()
                                 )))
                 .httpBasic(AbstractHttpConfigurer::disable)

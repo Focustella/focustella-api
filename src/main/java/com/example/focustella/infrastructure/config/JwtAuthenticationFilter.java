@@ -1,7 +1,7 @@
 package com.example.focustella.infrastructure.config;
 
 import com.example.focustella.common.api.ApiResponse;
-import com.example.focustella.common.exception.code.AuthErrorCode;
+import com.example.focustella.common.exception.code.CommonErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.jsonwebtoken.JwtException;
 import jakarta.servlet.FilterChain;
@@ -68,12 +68,12 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
     }
 
     private void writeUnauthorizedResponse(HttpServletResponse response, HttpServletRequest request) throws IOException {
-        response.setStatus(AuthErrorCode.UNAUTHORIZED.getStatus().value());
+        response.setStatus(CommonErrorCode.UNAUTHORIZED.getStatus().value());
         response.setContentType(MediaType.APPLICATION_JSON_VALUE);
         response.setCharacterEncoding("UTF-8");
         response.getWriter().write(
                 objectMapper.writeValueAsString(
-                        ApiResponse.failure(AuthErrorCode.UNAUTHORIZED.toApiError(request.getRequestURI()))
+                        ApiResponse.failure(CommonErrorCode.UNAUTHORIZED.toApiError(request.getRequestURI()))
                 )
         );
     }

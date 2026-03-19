@@ -1,5 +1,6 @@
 package com.example.focustella.infrastructure.persistence;
 
+import com.example.focustella.application.port.out.LoadConstellationPort;
 import com.example.focustella.application.port.out.SaveConstellationPort;
 import com.example.focustella.domain.model.Constellation;
 import com.example.focustella.domain.model.ConstellationDraft;
@@ -14,7 +15,7 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ConstellationPersistenceAdapter implements SaveConstellationPort {
+public class ConstellationPersistenceAdapter implements SaveConstellationPort, LoadConstellationPort {
 
     private final ConstellationJpaRepository constellationJpaRepository;
 
@@ -74,5 +75,43 @@ public class ConstellationPersistenceAdapter implements SaveConstellationPort {
     @Override
     public boolean existsActiveByName(String name) {
         return constellationJpaRepository.existsByNameAndDeletedAtIsNull(name);
+    }
+
+    @Override
+    public List<Constellation> loadActiveByStarCountRange(int minStarCount, int maxStarCount) {
+        return constellationJpaRepository.findByDeletedAtIsNullAndStarCountBetween(minStarCount, maxStarCount)
+                .stream()
+                .map(this::toDomain)
+                .toList();
+    }
+
+    @Override
+    public java.util.Optional<Constellation> loadById(Long id) {
+        return constellationJpaRepository.findByIdAndDeletedAtIsNull(id)
+                .map(this::toDomain);
+    }
+
+    private Constellation toDomain(ConstellationEntity saved) {
+        return new Constellation(
+                saved.getId(),
+                saved.getName(),
+                saved.getCreatedBy(),
+                saved.getStarCount(),
+                saved.getDefaultScale(),
+                saved.getMinScale(),
+                saved.getMaxScale(),
+                saved.getCreatedAt(),
+                saved.getUpdatedAt(),
+                saved.getStars().stream()
+                        .map(star -> new ConstellationStar(star.getId(), star.getVectorX(), star.getVectorY()))
+                        .toList(),
+                saved.getEdges().stream()
+                        .map(edge -> new ConstellationEdge(
+                                edge.getId(),
+                                edge.getFromStar().getId(),
+                                edge.getToStar().getId()
+                        ))
+                        .toList()
+        );
     }
 }

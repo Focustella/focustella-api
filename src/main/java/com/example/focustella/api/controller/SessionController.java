@@ -2,14 +2,18 @@ package com.example.focustella.api.controller;
 
 import com.example.focustella.api.docs.SessionControllerDocs;
 import com.example.focustella.api.dto.request.DailySessionSaveRequest;
-import com.example.focustella.api.dto.request.FocusSessionCreateRequest;
 import com.example.focustella.api.dto.request.FocusSessionSaveRequest;
+import com.example.focustella.api.dto.request.FocusTagRequest;
 import com.example.focustella.api.dto.response.DailySessionResponse;
 import com.example.focustella.api.dto.response.FocusSessionCreateResponse;
 import com.example.focustella.api.dto.response.FocusSessionResponse;
+import com.example.focustella.api.dto.response.UserTagResponse;
+import com.example.focustella.application.port.in.AddFocusTagUseCase;
 import com.example.focustella.application.port.in.CreateFocusSessionUseCase;
+import com.example.focustella.application.port.in.DeleteFocusTagUseCase;
 import com.example.focustella.application.port.in.GetDailySessionUseCase;
 import com.example.focustella.application.port.in.GetFocusSessionUseCase;
+import com.example.focustella.application.port.in.GetFocusTagUseCase;
 import com.example.focustella.application.port.in.SaveDailySessionUseCase;
 import com.example.focustella.application.port.in.SaveFocusSessionUseCase;
 import com.example.focustella.common.api.ApiResponse;
@@ -22,30 +26,40 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/session")
-public class DailySessionController implements SessionControllerDocs {
+public class SessionController implements SessionControllerDocs {
 
     private final SaveDailySessionUseCase saveDailySessionUseCase;
     private final GetDailySessionUseCase getDailySessionUseCase;
     private final CreateFocusSessionUseCase createFocusSessionUseCase;
     private final SaveFocusSessionUseCase saveFocusSessionUseCase;
     private final GetFocusSessionUseCase getFocusSessionUseCase;
+    private final AddFocusTagUseCase addFocusTagUseCase;
+    private final DeleteFocusTagUseCase deleteFocusTagUseCase;
+    private final GetFocusTagUseCase getFocusTagUseCase;
 
-    public DailySessionController(
+    public SessionController(
             SaveDailySessionUseCase saveDailySessionUseCase,
             GetDailySessionUseCase getDailySessionUseCase,
             CreateFocusSessionUseCase createFocusSessionUseCase,
             SaveFocusSessionUseCase saveFocusSessionUseCase,
-            GetFocusSessionUseCase getFocusSessionUseCase
+            GetFocusSessionUseCase getFocusSessionUseCase,
+            AddFocusTagUseCase addFocusTagUseCase,
+            DeleteFocusTagUseCase deleteFocusTagUseCase,
+            GetFocusTagUseCase getFocusTagUseCase
     ) {
         this.saveDailySessionUseCase = saveDailySessionUseCase;
         this.getDailySessionUseCase = getDailySessionUseCase;
         this.createFocusSessionUseCase = createFocusSessionUseCase;
         this.saveFocusSessionUseCase = saveFocusSessionUseCase;
         this.getFocusSessionUseCase = getFocusSessionUseCase;
+        this.addFocusTagUseCase = addFocusTagUseCase;
+        this.deleteFocusTagUseCase = deleteFocusTagUseCase;
+        this.getFocusTagUseCase = getFocusTagUseCase;
     }
 
     @PostMapping("/daily")
@@ -72,13 +86,13 @@ public class DailySessionController implements SessionControllerDocs {
         return ResponseEntity.ok(ApiResponse.success(responses));
     }
 
-    @PostMapping("/focus/create")
+    @GetMapping("/focus/create")
     public ResponseEntity<ApiResponse<FocusSessionCreateResponse>> createFocusSession(
             Authentication authentication,
-            @Valid @RequestBody FocusSessionCreateRequest request
+            @RequestParam("durationMinutes") Integer durationMinutes
     ) {
         return ResponseEntity.ok(ApiResponse.success(
-                createFocusSessionUseCase.prepare(authentication.getName(), request.durationMinutes())
+                createFocusSessionUseCase.prepare(authentication.getName(), durationMinutes)
         ));
     }
 
@@ -96,6 +110,35 @@ public class DailySessionController implements SessionControllerDocs {
     public ResponseEntity<ApiResponse<List<FocusSessionResponse>>> getFocusSessions(Authentication authentication) {
         return ResponseEntity.ok(ApiResponse.success(
                 getFocusSessionUseCase.getCompletedSessions(authentication.getName())
+        ));
+    }
+
+    @PostMapping("/focus/tag/add")
+    public ResponseEntity<ApiResponse<UserTagResponse>> addFocusTag(
+            Authentication authentication,
+            @Valid @RequestBody FocusTagRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                UserTagResponse.from(addFocusTagUseCase.add(authentication.getName(), request.name()))
+        ));
+    }
+
+    @PostMapping("/focus/tag/delete")
+    public ResponseEntity<ApiResponse<UserTagResponse>> deleteFocusTag(
+            Authentication authentication,
+            @Valid @RequestBody FocusTagRequest request
+    ) {
+        return ResponseEntity.ok(ApiResponse.success(
+                UserTagResponse.from(deleteFocusTagUseCase.delete(authentication.getName(), request.name()))
+        ));
+    }
+
+    @GetMapping("/focus/tag")
+    public ResponseEntity<ApiResponse<List<UserTagResponse>>> getFocusTags(Authentication authentication) {
+        return ResponseEntity.ok(ApiResponse.success(
+                getFocusTagUseCase.getAll(authentication.getName()).stream()
+                        .map(UserTagResponse::from)
+                        .toList()
         ));
     }
 }
