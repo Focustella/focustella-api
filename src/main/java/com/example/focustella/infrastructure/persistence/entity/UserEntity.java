@@ -24,6 +24,15 @@ public class UserEntity {
     @Column(nullable = false, updatable = false, length = 36)
     private String id;
 
+    @Column(name = "user_code", nullable = false, unique = true, length = 8)
+    private String userCode;
+
+    @Column(name = "nickname", nullable = true, length = 255)
+    private String nickname;
+
+    @Column(name = "email", nullable = true, unique = true, length = 255)
+    private String email;
+
     @Column(nullable = false)
     private Long seed;
 
@@ -31,27 +40,43 @@ public class UserEntity {
     @Column(nullable = false, length = 20)
     private UserType type;
 
-    @Column(name = "created_at", nullable = false)
+    @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at", nullable = false)
     private LocalDateTime updatedAt;
 
-    public UserEntity(String id, Long seed, UserType type) {
+    public UserEntity(String id, String userCode, String nickname, String email, Long seed, UserType type) {
         this.id = id;
+        this.userCode = userCode;
+        this.nickname = nickname;
+        this.email = email;
         this.seed = seed;
         this.type = type;
     }
 
+    public UserEntity(String id, String userCode, String nickname, String email, Long seed, UserType type, LocalDateTime createdAt, LocalDateTime updatedAt) {
+        this.id = id;
+        this.userCode = userCode;
+        this.nickname = nickname;
+        this.email = email;
+        this.seed = seed;
+        this.type = type;
+        this.createdAt = createdAt;
+        this.updatedAt = updatedAt;
+    }
+
     @PrePersist
     void prePersist() {
-        LocalDateTime now = LocalDateTime.now();
-        createdAt = now;
-        updatedAt = now;
+        if (this.createdAt == null) {
+            LocalDateTime now = LocalDateTime.now();
+            this.createdAt = now;
+            this.updatedAt = now;
+        }
     }
 
     @PreUpdate
     void preUpdate() {
-        updatedAt = LocalDateTime.now();
+        this.updatedAt = LocalDateTime.now();
     }
 }
