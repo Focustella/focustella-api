@@ -1,7 +1,7 @@
 package com.example.focustella.infrastructure.config;
 
 import com.example.focustella.common.api.ApiResponse;
-import com.example.focustella.common.exception.code.CommonErrorCode;
+import com.example.focustella.common.exception.code.AuthErrorCode;
 import com.example.focustella.common.exception.code.ErrorCodeSpec;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
@@ -47,16 +47,21 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
                         .requestMatchers(
                                 "/api/v1/session/**",
-                                "/api/v1/sky/me"
+                                "/api/v1/sky/me",
+                                "/api/v1/auth/nickname" // 닉네임 변경은 인증 필요
                         ).authenticated()
                         .requestMatchers(
                                 "/swagger-ui.html",
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
-                                "/api/v1/auth/**",
+                                "/api/v1/auth/anonymous", // 익명 로그인
+                                "/api/v1/auth/signin", // ✅ 일반/애플 로그인도 누구나 접근 가능해야 함!
+                                "/api/v1/users/**",
                                 "/api/v1/sky/*",
-                                "/api/v1/constellation/**",
-                                "/error"
+                                "/api/v1/constellations/**",
+                                "/error",
+                                "/api/v1/session/daily",
+                                "/api/v1/friend/**"
                         ).permitAll()
                         .anyRequest().authenticated())
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class)
@@ -64,13 +69,13 @@ public class SecurityConfig {
                         .authenticationEntryPoint((request, response, authException) ->
                                 writeErrorResponse(
                                         response,
-                                        CommonErrorCode.UNAUTHORIZED,
+                                        AuthErrorCode.UNAUTHORIZED,
                                         request.getRequestURI()
                                 ))
                         .accessDeniedHandler((request, response, accessDeniedException) ->
                                 writeErrorResponse(
                                         response,
-                                        CommonErrorCode.FORBIDDEN,
+                                        AuthErrorCode.FORBIDDEN,
                                         request.getRequestURI()
                                 )))
                 .httpBasic(AbstractHttpConfigurer::disable)
