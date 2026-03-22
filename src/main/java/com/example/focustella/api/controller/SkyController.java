@@ -1,5 +1,6 @@
 package com.example.focustella.api.controller;
 
+import com.example.focustella.api.docs.SkyControllerDocs;
 import com.example.focustella.api.dto.response.SkyResponse;
 import com.example.focustella.application.port.in.GetSkyUseCase;
 import com.example.focustella.common.api.ApiResponse;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 @RequestMapping("/api/v1/sky")
-public class SkyController {
+public class SkyController implements SkyControllerDocs {
 
     private final GetSkyUseCase getSkyUseCase;
 

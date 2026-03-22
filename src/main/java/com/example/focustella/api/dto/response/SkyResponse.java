@@ -9,7 +9,7 @@ public record SkyResponse(
         String ownerId,
         Long seed,
         List<DailyStarResponse> dailyStars,
-        List<Object> focusConstellations
+        List<FocusConstellationResponse> focusConstellations
 ) {
     public static SkyResponse from(Sky sky) {
         return new SkyResponse(
@@ -21,7 +21,21 @@ public record SkyResponse(
                                 DailySessionDetailResponse.from(star.session())
                         ))
                         .toList(),
-                List.of()
+                sky.focusConstellations().stream()
+                        .map(item -> new FocusConstellationResponse(
+                                item.focusSession().id(),
+                                item.focusSession().constellationId(),
+                                item.focusSession().durationMinutes(),
+                                item.focusSession().startedAt(),
+                                item.focusSession().endedAt(),
+                                item.focusSession().slotSeconds(),
+                                item.focusSession().discoveredStarCount(),
+                                item.focusSession().topicTags(),
+                                item.focusSession().rating(),
+                                item.focusSession().freeText(),
+                                ConstellationResponse.from(item.constellation())
+                        ))
+                        .toList()
         );
     }
 
@@ -51,5 +65,20 @@ public record SkyResponse(
                             .toList()
             );
         }
+    }
+
+    public record FocusConstellationResponse(
+            String sessionId,
+            Long constellationId,
+            Integer durationMinutes,
+            java.time.Instant startedAt,
+            java.time.Instant endedAt,
+            Integer slotSeconds,
+            Integer discoveredStarCount,
+            List<String> topicTags,
+            Integer rating,
+            String freeText,
+            ConstellationResponse constellation
+    ) {
     }
 }

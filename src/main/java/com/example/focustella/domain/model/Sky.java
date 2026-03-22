@@ -5,6 +5,7 @@ import java.util.List;
 public record Sky(
         String ownerId,
         Long seed,
-        List<SkyDailyStar> dailyStars
+        List<SkyDailyStar> dailyStars,
+        List<SkyFocusConstellation> focusConstellations
 ) {
 }
