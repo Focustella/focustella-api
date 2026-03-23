@@ -51,6 +51,11 @@ public class FriendPersistenceAdapter implements SaveFriendPort, LoadFriendPort 
                 .map(this::mapToDomain);
     }
 
+    @Override
+    public boolean existsRelation(String requesterId, String receiverId) {
+        return friendJpaRepository.existsRelation(requesterId, receiverId);
+    }
+
     private FriendRelation mapToDomain(FriendEntity entity) {
         return new FriendRelation(
                 entity.getId(),
