@@ -9,4 +9,5 @@ public interface LoadFriendPort {
     List<FriendRelation> loadFriends(String userId);
     Optional<FriendRelation> loadFriendRelation(String requesterId, String receiverId);
     Optional<FriendRelation> loadFriendRelationById(String relationId);
+    boolean existsRelation(String requesterId, String receiverId);
 }
